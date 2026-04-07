@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "amqplib": "^0.10.9",
-    "axios": "^1.13.2",
-    "express": "^5.1.0",
-    "opossum": "^9.0.0"
-  }
-}
