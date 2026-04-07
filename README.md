@@ -78,19 +78,18 @@ Los mismos ejemplos se citan en teoría en **1.1**, **1.2**, **1.3** (monolito /
 
 ### 🔄 **Módulo 3 – Mensajería Distribuida y Eventos** *(2h)*
 
-#### 3.1 Arquitectura orientada a eventos (EDA) — 📄 [Abrir tema](curso-microservicios-js/MODULOS/Modulo3/3.1_arquitectura_eventos.md)
+#### 3.1 Introducción a la mensajería distribuida — 📄 [Abrir tema](curso-microservicios-js/MODULOS/Modulo3/3.1_arquitectura_eventos.md)
 
-* Diferencia entre *request/response* y *publish/subscribe*.
-* Componentes: productores, consumidores, colas y topics.
+* Rol del *broker* (RabbitMQ, Kafka) y mensajería asíncrona frente a REST.
+* Contraste *request/response* vs *publish/subscribe*; productores, consumidores, colas y topics.
 * Garantías de entrega (at-least-once, exactly-once).
 
 📁 RabbitMQ mínimo (publicador / consumidor): [`EJEMPLOS/mensajeria_simple`](curso-microservicios-js/EJEMPLOS/mensajeria_simple).
 
-#### 3.2 Message Broker — 📄 [Abrir tema](curso-microservicios-js/MODULOS/Modulo3/3.2_message_broker.md)
+#### 3.2 Patrones de enrutamiento y publicación (*exchanges*) — 📄 [Abrir tema](curso-microservicios-js/MODULOS/Modulo3/3.2_message_broker.md)
 
-* Concepto y rol de un *broker* (RabbitMQ, Kafka).
-* Flujo de mensajes en sistemas distribuidos.
-* Idempotencia y consistencia eventual.
+* Tipos de *exchange* (direct, fanout, topic) y claves de enrutamiento.
+* Flujo en el broker; idempotencia y consistencia eventual.
 
 #### 3.3 Coreografía vs Orquestación — 📄 [Abrir tema](curso-microservicios-js/MODULOS/Modulo3/3.3_coreografia_vs_orquestacion.md)
 
