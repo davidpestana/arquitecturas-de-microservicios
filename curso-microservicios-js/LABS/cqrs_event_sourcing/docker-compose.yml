@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+      start_period: 10s
+
+  commands-service:
+    image: node:22
+    container_name: commands-service
+    working_dir: /app
+    volumes:
+      - ./commands-service:/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        printf '%s\n' '{"type":"module"}' > package.json
+        npm install express amqplib
+        node index.js
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+    ports:
+      - "5000:5000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  queries-service:
+    image: node:22
+    container_name: queries-service
+    working_dir: /app
+    volumes:
+      - ./queries-service:/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        printf '%s\n' '{"type":"module"}' > package.json
+        npm install express amqplib
+        node index.js
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+    ports:
+      - "5001:5001"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy

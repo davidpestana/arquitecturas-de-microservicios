@@ -1,1 +1,6 @@
 node_modules
+
+# Generados al montar volúmenes Docker en LABS (el compose escribe package.json e instala deps)
+curso-microservicios-js/LABS/**/node_modules/
+curso-microservicios-js/LABS/**/package.json
+curso-microservicios-js/LABS/**/package-lock.json

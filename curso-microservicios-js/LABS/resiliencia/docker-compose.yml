@@ -1,0 +1,64 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+      start_period: 10s
+
+  unreliable-service:
+    image: node:22
+    container_name: unreliable-service
+    working_dir: /app
+    volumes:
+      - ./unreliable-service:/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        printf '%s\n' '{"type":"module"}' > package.json
+        npm install express amqplib
+        node index.js
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=development
+      - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  client-service:
+    image: node:22
+    container_name: client-service
+    working_dir: /app
+    volumes:
+      - ./client-service:/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        printf '%s\n' '{"type":"module"}' > package.json
+        npm install express axios opossum amqplib
+        node index.js
+    ports:
+      - "4001:4001"
+    environment:
+      - NODE_ENV=development
+      - RABBITMQ_URL=amqp://rabbitmq
+      - UNRELIABLE_URL=http://unreliable-service:4000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      unreliable-service:
+        condition: service_started

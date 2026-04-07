@@ -1,0 +1,133 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+      start_period: 10s
+
+  orders-service:
+    image: node:22
+    container_name: orders-service
+    working_dir: /app
+    volumes:
+      - ./orders-service:/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        printf '%s\n' '{"type":"module"}' > package.json
+        npm install express amqplib
+        node index.js
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+    ports:
+      - "3000:3000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  payments-service:
+    image: node:22
+    container_name: payments-service
+    working_dir: /app
+    volumes:
+      - ./payments-service:/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        printf '%s\n' '{"type":"module"}' > package.json
+        npm install express amqplib
+        node index.js
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+      - HTTP_PORT=3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  shipping-service:
+    image: node:22
+    container_name: shipping-service
+    working_dir: /app
+    volumes:
+      - ./shipping-service:/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        printf '%s\n' '{"type":"module"}' > package.json
+        npm install express amqplib
+        node index.js
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+      - HTTP_PORT=3002
+    ports:
+      - "3002:3002"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  notifications-service:
+    image: node:22
+    container_name: notifications-service
+    working_dir: /app
+    volumes:
+      - ./notifications-service:/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        printf '%s\n' '{"type":"module"}' > package.json
+        npm install express amqplib
+        node index.js
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+      - HTTP_PORT=3003
+    ports:
+      - "3003:3003"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  orchestrator-service:
+    image: node:22
+    container_name: orchestrator-service
+    working_dir: /app
+    volumes:
+      - ./orchestrator-service:/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        printf '%s\n' '{"type":"module"}' > package.json
+        npm install express axios
+        node index.js
+    ports:
+      - "4000:4000"
+    environment:
+      - ORDERS_URL=http://orders-service:3000
+      - PAYMENTS_URL=http://payments-service:3001
+      - SHIPPING_URL=http://shipping-service:3002
+      - NOTIFICATIONS_URL=http://notifications-service:3003
+    depends_on:
+      - orders-service
+      - payments-service
+      - shipping-service
+      - notifications-service

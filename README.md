@@ -8,7 +8,7 @@
 
 1. **Fork** del repositorio y abre un **Codespace** desde tu fork (*Code* → *Codespaces*).
 2. **Teoría:** [`MODULOS/`](curso-microservicios-js/MODULOS/) · **Ejemplos:** [`EJEMPLOS/`](curso-microservicios-js/EJEMPLOS/) (cada carpeta trae un `README` con los pasos).
-3. **Laboratorios (M2–M5):** los construyes en `curso-microservicios-js/LABS/` siguiendo los guiones `*_practica_*.md` (en `main` esa carpeta no viene rellena). **M1** no tiene lab en `LABS`: la práctica son solo [`EJEMPLOS/monolito`](curso-microservicios-js/EJEMPLOS/monolito) y [`distribuida`](curso-microservicios-js/EJEMPLOS/distribuida).
+3. **Laboratorios (M2–M5):** los construyes en `curso-microservicios-js/LABS/` siguiendo los guiones `*_practica_*.md`. En **`main`** esa carpeta puede ir vacía; la **solución de referencia** está en la rama **`labs-resueltos`** (`git checkout labs-resueltos`). Detalle en [`LABS/README.md`](curso-microservicios-js/LABS/README.md). **M1** no tiene lab en `LABS`: la práctica son solo [`EJEMPLOS/monolito`](curso-microservicios-js/EJEMPLOS/monolito) y [`distribuida`](curso-microservicios-js/EJEMPLOS/distribuida).
 
 En el **Codespace por defecto** ya tienes **Node** y **Docker**; para abrir APIs y UIs en el navegador usa la pestaña **Ports**.
 

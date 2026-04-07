@@ -1,0 +1,81 @@
+version: "3.9"
+
+services:
+  gateway:
+    image: node:22
+    container_name: gateway
+    working_dir: /app
+    volumes:
+      - ./gateway:/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        printf '%s\n' '{"type":"module"}' > package.json
+        npm install express axios jsonwebtoken
+        node index.js
+    ports:
+      - "4000:4000"
+    environment:
+      - AUTH_URL=http://auth-service:3005
+      - ORDERS_URL=http://orders-service:3006
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      orders-service:
+        condition: service_healthy
+
+  auth-service:
+    image: node:22
+    container_name: auth-service
+    working_dir: /app
+    volumes:
+      - ./auth-service:/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        printf '%s\n' '{"type":"module"}' > package.json
+        npm install express jsonwebtoken
+        node index.js
+    ports:
+      - "3005:3005"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3005/login',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).then(()=>process.exit(0)).catch(()=>process.exit(1))\"",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+      start_period: 25s
+
+  orders-service:
+    image: node:22
+    container_name: orders-service
+    working_dir: /app
+    volumes:
+      - ./orders-service:/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        printf '%s\n' '{"type":"module"}' > package.json
+        npm install express jsonwebtoken
+        node index.js
+    ports:
+      - "3006:3006"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3006/pedidos',{headers:{Authorization:'Bearer x'}}).then(r=>process.exit(r.status===401?0:1)).catch(()=>process.exit(1))\"",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+      start_period: 25s
