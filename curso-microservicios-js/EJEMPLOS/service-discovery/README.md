@@ -6,51 +6,30 @@ Ver **registro** de un microservicio al iniciar y **descubrimiento** por nombre 
 
 ## Qué necesitas
 
-- Docker (para Consul)
-- Node.js 18+
-- Tres terminales
+- Docker
 
 ## Cómo ejecutarlo
 
-**1. Consul** (desde esta carpeta `service-discovery`):
+Desde esta carpeta `service-discovery`:
 
 ```bash
-docker compose up -d
+docker compose up --build
 ```
 
 Interfaz web habitual: **http://localhost:8500** (según `docker-compose.yaml`).
-
-**2. Servicio que se registra** (`servicioA` — puerto por defecto **3001**):
-
-```bash
-cd servicioA
-npm install
-npm start
-```
-
-Deberías ver en consola que el servicio quedó registrado en Consul.
-
-**3. Cliente que descubre y llama** (`servicioB`):
-
-```bash
-cd servicioB
-npm install
-npm start
-```
-
-`B` consulta Consul, resuelve la dirección del servicio registrado y hace `GET .../hello`.
+`servicioA` y `servicioB` también se levantan en contenedores y usan la red interna de Docker para hablar con Consul.
 
 ## Qué deberías ver
 
-- En **servicioA**: logs de registro en Consul y peticiones `GET /hello` cuando ejecutes `B`.
+- En **servicioA**: logs de registro en Consul y peticiones `GET /hello` cuando arranque `B`.
 - En **servicioB**: URL resuelta y el JSON de respuesta del `hello`.
 - En la **UI de Consul**: el servicio listado y, si aplica, el health check en estado *passing*.
 
 ## Qué comprobar
 
-- Con **solo** Consul y **sin** `servicioA`, al ejecutar `B` debería fallar el descubrimiento o no haber instancias saludables.
-- Tras levantar `A`, `B` debe completar la llamada.
-- Prueba **SIGINT** en `A` (Ctrl+C): el código hace **deregistro**; vuelve a ejecutar `B` y observa el error (no hay instancia saludable).
+- Con **solo** Consul y **sin** `servicioA`, `servicioB` debería fallar el descubrimiento o no ver instancias saludables.
+- Tras levantar `servicioA`, `servicioB` debe completar la llamada.
+- Si paras `servicioA`, Consul debe marcar el health check como no saludable.
 
 ## Dónde poner el foco
 

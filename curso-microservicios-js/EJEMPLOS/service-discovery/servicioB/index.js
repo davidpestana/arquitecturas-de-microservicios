@@ -2,7 +2,9 @@ const axios = require("axios");
 const Consul = require("consul");
 
 const SERVICE_NAME = "demo-service";
-const consul = new Consul({ host: "127.0.0.1", port: 8500, promisify: true });
+const CONSUL_HOST = process.env.CONSUL_HOST || "127.0.0.1";
+const CONSUL_PORT = Number(process.env.CONSUL_PORT || 8500);
+const consul = new Consul({ host: CONSUL_HOST, port: CONSUL_PORT, promisify: true });
 
 async function discoverService() {
   // Obtiene las instancias del servicio desde Consul

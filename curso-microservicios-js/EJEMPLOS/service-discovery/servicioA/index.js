@@ -2,11 +2,14 @@ const express = require("express");
 const Consul = require("consul");
 
 const PORT = process.env.PORT || 3001;
+const CONSUL_HOST = process.env.CONSUL_HOST || "127.0.0.1";
+const CONSUL_PORT = Number(process.env.CONSUL_PORT || 8500);
+const SERVICE_ADDRESS = process.env.SERVICE_ADDRESS || "127.0.0.1";
 const SERVICE_NAME = "demo-service";
 const SERVICE_ID = `${SERVICE_NAME}-${PORT}`;
 
 const app = express();
-const consul = new Consul({ host: "127.0.0.1", port: 8500, promisify: true });
+const consul = new Consul({ host: CONSUL_HOST, port: CONSUL_PORT, promisify: true });
 
 // Endpoint de ejemplo
 app.get("/hello", (req, res) => {
@@ -18,10 +21,10 @@ async function registerService() {
   await consul.agent.service.register({
     id: SERVICE_ID,
     name: SERVICE_NAME,
-    address: "127.0.0.1",
+    address: SERVICE_ADDRESS,
     port: PORT,
     check: {
-      http: `http://127.0.0.1:${PORT}/health`,
+      http: `http://${SERVICE_ADDRESS}:${PORT}/health`,
       interval: "10s",
       timeout: "1s"
     }
@@ -40,7 +43,7 @@ app.get("/health", (req, res) => {
 });
 
 app.listen(PORT, async () => {
-  console.log(`🚀 Servicio escuchando en http://127.0.0.1:${PORT}`);
+  console.log(`🚀 Servicio escuchando en http://0.0.0.0:${PORT}`);
   try {
     await registerService();
   } catch (err) {
