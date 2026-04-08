@@ -1,7 +1,7 @@
 const express = require("express");
 const Consul = require("consul");
 
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT || 3001);
 const CONSUL_HOST = process.env.CONSUL_HOST || "127.0.0.1";
 const CONSUL_PORT = Number(process.env.CONSUL_PORT || 8500);
 const SERVICE_ADDRESS = process.env.SERVICE_ADDRESS || "127.0.0.1";

@@ -17,7 +17,7 @@ services:
     networks:
       - consul-net
 
-  servicioA:
+  servicioa:
     image: node:20-alpine
     container_name: servicio-a
     working_dir: /app
@@ -28,7 +28,7 @@ services:
       - PORT=3001
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
-      - SERVICE_ADDRESS=servicioA
+      - SERVICE_ADDRESS=servicioa
     depends_on:
       consul:
         condition: service_healthy
@@ -37,7 +37,7 @@ services:
     networks:
       - consul-net
 
-  servicioB:
+  serviciob:
     image: node:20-alpine
     container_name: servicio-b
     working_dir: /app
@@ -50,7 +50,7 @@ services:
     depends_on:
       consul:
         condition: service_healthy
-      servicioA:
+      servicioa:
         condition: service_started
     networks:
       - consul-net
